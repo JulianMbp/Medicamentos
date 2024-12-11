@@ -1,18 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
-import Header from "./sections/header";
-import Welcome from "./sections/welcome";
-
-
-
-export default function Home() {
-   return (
-    <main className="w-screen h-screen bg-p-olivine-100 font-sans">
-      <Header />
-      <Welcome />
-
-      <Header />
-      <div className="p-6 bg-p-olivine-100 min-h-screen">
+import Header from "@/app/sections/header";
+export default function Med() {
+    return (
+        <main>
+        <Header />
+        <div className="p-6 bg-p-olivine-100 min-h-screen">
         <h1 className="text-3xl font-bold text-center text-p-olivine-950 mt-6 mb-10">Medicamentos Disponibles</h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -49,13 +40,6 @@ export default function Home() {
 
         </div>
       </div>
-    
-
-  
-      
-    </main>
-
-
-    
+      </main>
     );
 }
