@@ -1,9 +1,9 @@
 import Link from "next/link";
-import SearchBar from "../components/searchBar";
+
 const Header = () => {
   return (
-    <header className="flex pl-4 bg-p-olivine-600 text-white p-6 border-b  border-p-olivine-800">
-      <div className="flex ml-16  w-[80%]">
+    <header className="flex  bg-p-olivine-600 text-white p-6 border-b  border-p-olivine-800">
+      <div className="flex   w-[80%]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 100 100"

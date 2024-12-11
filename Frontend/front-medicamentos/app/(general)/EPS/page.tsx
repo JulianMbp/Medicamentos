@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Header from "@/app/sections/header";
+
 import Welcome from "@/app/sections/welcome";
 
 export default function EPS() {
@@ -26,7 +26,7 @@ export default function EPS() {
       <div className="p-6 bg-p-olivine-50 min-h-screen">
         <div className="flex flex-col items-center justify-center min-h-screen bg-p-olivine-100">
         <Welcome/>
-          <div className="w-full max-w-md p-6 bg-p-olivine-50 rounded-lg shadow-xl">
+          <div className="md:w-full max-w-md p-6 bg-p-olivine-50 rounded-lg shadow-xl w-[90%]">
             <h2 className="text-2xl font-semibold text-p-olivine-900 mb-4 text-center">
               Selecciona tu EPS
             </h2>
@@ -39,7 +39,7 @@ export default function EPS() {
                 name="eps"
                 defaultValue="option"
                 onChange={handleSelectChange}
-                className="w-full p-3 border border-p-olivine-200 rounded-lg shadow-sm focus:ring-p-harvest-gold-500 focus:border-p-harvest-gold-500 hover:border-p-harvest-gold-500 text-p-olivine-800"
+                className=" w-[90%]  md:w-full p-3 border border-p-olivine-200 rounded-lg shadow-sm focus:ring-p-harvest-gold-500 focus:border-p-harvest-gold-500 hover:border-p-harvest-gold-500 text-p-olivine-800"
               >
                 <option value="option" disabled>
                   Selecciona una opción
