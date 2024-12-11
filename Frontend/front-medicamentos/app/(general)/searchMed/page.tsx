@@ -1,19 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import Header from "./sections/header";
-import Welcome from "./sections/welcome";
-import EPS from "./(general)/EPS/page";
+
+import Header from "@/app/sections/header";
+import Welcome from "@/app/sections/welcome";
 
 
 
-export default function Home() {
+export default function SearchMed() {
    return (
     <main className="w-screen h-screen bg-p-olivine-100 font-sans">
       <Header />
-      <EPS/>
+      <Welcome />
     </main>
-
-
-    
     );
 }
