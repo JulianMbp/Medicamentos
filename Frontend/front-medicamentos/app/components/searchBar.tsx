@@ -1,23 +1,28 @@
 "use client";
+
 import React, { useState } from "react";
+import axios from 'axios';
 
 interface SearchBarProps {
-  onSearch?: (query: string) => void;
-  onButtonClick?: () => void; 
+  onSearch: (results: any[]) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onButtonClick }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-    if (onSearch) onSearch(value);
   };
 
-  const handleButtonClick = () => {
-    if (onButtonClick) onButtonClick(); 
-    console.log("Botón de búsqueda clickeado", query); 
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/medicamentos/${query}`);
+      onSearch(Array.isArray(response.data) ? response.data : [response.data]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      onSearch([]);
+    }
   };
 
   return (
@@ -25,12 +30,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onButtonClick }) => {
       <input
         type="text"
         className="flex-1 bg-transparent outline-none text-p-olivine-950 placeholder-gray-400 focus:ring-0 focus:outline-none transition duration-200"
-        placeholder="Buscar..."
+        placeholder="Buscar medicamentos..."
         value={query}
         onChange={handleInputChange}
       />
       <button
-        onClick={handleButtonClick} 
+        onClick={handleSearch}
         className="p-2 bg-transparent border-0 outline-none cursor-pointer transition duration-200 ease-in-out hover:scale-110 focus:ring-2 focus:ring-p-harvest-gold-500"
       >
         <svg
@@ -53,3 +58,4 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onButtonClick }) => {
 };
 
 export default SearchBar;
+
