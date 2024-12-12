@@ -55,12 +55,12 @@ class MedicamentosListView(APIView):
 
 class MedicamentoByNombreView(APIView):
     def get(self, request, nombre):
-        try:
-            medicamento = MedicamentosList.objects.get(nombre=nombre)
-        except MedicamentosList.DoesNotExist:
-            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MedicamentosListSerializer(medicamento)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        medicamentos = MedicamentosList.objects.filter(nombre__icontains=nombre)
+        if not medicamentos.exists():
+            return Response({"error": "No se encontraron medicamentos con el nombre proporcionado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = MedicamentosListSerializer(medicamentos, many=True)
+        return Response({"medicamentos": serializer.data}, status=status.HTTP_200_OK)
 
 class BlockchainValidationAPIView(APIView):
     def get(self, request):
