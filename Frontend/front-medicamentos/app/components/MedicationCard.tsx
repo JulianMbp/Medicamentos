@@ -53,3 +53,4 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, onViewDeta
 };
 
 export default MedicationCard;
+

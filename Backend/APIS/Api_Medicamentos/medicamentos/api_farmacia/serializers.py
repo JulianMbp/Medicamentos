@@ -5,7 +5,7 @@ class MedicamentosListSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicamentosList
         fields = [
-            'id',  # Incluye el campo ID si deseas que aparezca en las respuestas
+            'id',
             'nombre',
             'existencias',
             'concentracion',

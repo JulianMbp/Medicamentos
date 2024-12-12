@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import SearchBar from "../components/searchBar";
+
 import ThemeSwitch from "../components/Theme.Switch";
 
 
@@ -82,23 +82,33 @@ const Header = () => {
     </button>
   </div>
 
+     
+      {isMenuOpen && (
+        <nav className="absolute top-16 left-0 w-full  text-p-olivine-950 shadow-md flex flex-col items-start px-8 py-4 md:hidden">
+          <ul className="space-y-4 text-lg w-full">
+            <li>
+              <Link
+                href="IA"
+                className="block transition duration-300 hover:text-p-harvest-gold-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                FinderIA
+              </Link>
+              <Link
+                href="turn"
+                className="block transition duration-300 hover:text-p-harvest-gold-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Turno
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      )}
+    </header>
 
-  {isMenuOpen && (
-    <nav className="absolute top-16 left-0 w-full text-p-olivine-950 shadow-md flex flex-col items-start px-8 py-4 md:hidden dark:bg-gray-800 dark:text-gray-200 dark:shadow-none">
-      <ul className="space-y-4 text-lg w-full">
-        <li>
-          <Link
-            href="IA"
-            className="block transition duration-300 hover:text-p-harvest-gold-200 dark:hover:text-p-harvest-gold-200"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            FinderIA
-          </Link>
-        </li>
-      </ul>
-    </nav>
-  )}
-</header>
+  
+
 
   );
 };
