@@ -17,7 +17,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/medicamentos/${query}`);
+      let response;
+      if (query) {
+        response = await axios.get(`http://127.0.0.1:8000/api/medicamentos/nombre/${query}/`);
+      } else {
+        response = await axios.get('http://127.0.0.1:8000/api/medicamentos/');
+      }
       onSearch(Array.isArray(response.data) ? response.data : [response.data]);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -58,4 +63,3 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 };
 
 export default SearchBar;
-

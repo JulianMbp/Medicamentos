@@ -1,22 +1,15 @@
-"use client";
-
-import React, { useState } from "react";
+'use client';
+import { useState } from 'react';
 import axios from 'axios';
 import Header from "@/app/sections/header";
-import SearchBar from "@/app/components/searchBar";
-import MedicationCard from "@/app/components/MedicationCard";
-
-interface Farmacia {
-  id: number;
-  nombreSede: string;
-}
 
 interface Medicamento {
   id: number;
   nombre: string;
   existencias: number;
   concentracion: number;
-  farmacias: Farmacia[];
+  nombreFarmacia: string;
+  direccion: string;
   marca: string;
   categoria: string;
   formula: boolean;
@@ -25,61 +18,98 @@ interface Medicamento {
   precio_unitario: number;
 }
 
-export default function Eps2() {
+export default function Med() {
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<Medicamento[]>([]);
-  const [selectedMedicamento, setSelectedMedicamento] = useState<Medicamento | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = (results: Medicamento[]) => {
-    setSearchResults(results);
-    setSelectedMedicamento(null);
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/medicamentos/nombre/${encodeURIComponent(searchTerm)}/`
+      );
+      const medicamentos = response.data.medicamentos;
+
+      if (medicamentos.length > 0) {
+        setSearchResults(medicamentos);
+      } else {
+        setSearchResults([]);
+        setError('No se encontraron medicamentos con ese nombre.');
+      }
+    } catch (err) {
+      setError('Hubo un error al cargar los datos.');
+      console.error(err);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleViewDetails = async (id: number) => {
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/medicamentos/${id}`);
-    setSelectedMedicamento(response.data);
-  } catch (error) {
-    console.error("Error fetching medication details:", error);
-  }
-};
-
   return (
-    <main className="w-screen min-h-screen bg-p-olivine-50 flex flex-col">
+    <main>
       <Header />
-
-      <div className="flex flex-col items-center justify-start p-6 bg-p-olivine-100 flex-grow space-y-6 m-5">
-        <div className="shadow-2xl bg-p-olivine-50 rounded-xl p-12 border border-p-olivine-950 border-opacity-20 w-full max-w-4xl">
-          <p className="font-semibold pb-2 pt-6 w-full text-center text-p-olivine-950">
-            Bienvenido usuario de <span className="text-p-olivine-700 font-bold">Sanitas</span>
-          </p>
-
-          <SearchBar onSearch={handleSearch} />
-          <p className="text-p-olivine-700 pt-7 font-light text-center">
-            Busca los medicamentos que necesites
-          </p>
-        </div>
-
-        {selectedMedicamento ? (
-          <div className="w-full max-w-4xl">
-            <h2 className="text-2xl font-bold text-p-olivine-950 mb-4">Detalles del medicamento:</h2>
-            <MedicationCard medicamento={selectedMedicamento} onViewDetails={handleViewDetails} />
+      <div className="p-6 bg-p-olivine-100 min-h-screen">
+        <h1 className="text-3xl font-bold text-center text-p-olivine-950 mt-6 mb-10">
+          Medicamentos Disponibles
+        </h1>
+        <div className="max-w-xl mx-auto mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Ingrese el nombre del medicamento..."
+              className="w-full px-4 py-3 border border-p-olivine-500 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-p-olivine-700 bg-p-olivine-50 text-p-olivine-900 placeholder-p-olivine-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <button
-              onClick={() => setSelectedMedicamento(null)}
-              className="mt-4 bg-p-olivine-600 text-white px-4 py-2 rounded-md hover:bg-p-olivine-700 transition-colors duration-200"
+              onClick={handleSearch}
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 px-4 py-2 bg-p-olivine-700 text-white rounded-md hover:bg-p-olivine-800 focus:outline-none focus:ring focus:ring-p-olivine-900"
             >
-              Volver a resultados
+              Buscar
             </button>
           </div>
-        ) : searchResults.length > 0 ? (
-          <div className="w-full max-w-4xl">
-            <h2 className="text-2xl font-bold text-p-olivine-950 mb-4">Resultados de la búsqueda:</h2>
-            {searchResults.map((medicamento) => (
-              <MedicationCard key={medicamento.id} medicamento={medicamento} onViewDetails={handleViewDetails} />
-            ))}
-          </div>
-        ) : null}
+        </div>
+
+        {loading && <p className="text-p-olivine-700 text-center">Cargando resultados...</p>}
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {searchResults.map((medicamento) => (
+            <div
+              key={medicamento.id}
+              className="bg-p-olivine-50 p-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 hover:border-4 hover:border-p-olivine-800 hover:shadow-2xl hover:shadow-p-olivine-700 hover:bg-p-olivine-200 hover:-translate-y-3"
+            >
+              <h2 className="text-xl font-semibold text-p-olivine-950 mb-2">
+                {medicamento.nombre}
+              </h2>
+              <p className="text-p-olivine-700">Marca: {medicamento.marca}</p>
+              <p className="text-p-olivine-700">Categoría: {medicamento.categoria}</p>
+              <p className="text-p-olivine-700">Concentración: {medicamento.concentracion} mg</p>
+              <p className="text-p-olivine-700">Existencias: {medicamento.existencias}</p>
+              <p className="text-p-olivine-700">Farmacia: {medicamento.nombreFarmacia}</p>
+              <p className="text-p-olivine-700">Dirección: {medicamento.direccion}</p>
+              <p className="text-p-olivine-700">
+                Requiere Fórmula: {medicamento.formula ? 'Sí' : 'No'}
+              </p>
+              <p className="text-p-olivine-700">
+                Periodicidad: Cada {medicamento.periodicidad} horas
+              </p>
+              <p className="text-lg font-bold text-p-olivine-500 hover:text-p-harvest-gold-600 mt-4">
+                ${medicamento.precio_unitario}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {searchResults.length === 0 && !loading && !error && (
+          <p className="text-p-olivine-700 text-center">No hay resultados para mostrar.</p>
+        )}
       </div>
     </main>
   );
 }
-
