@@ -12,4 +12,4 @@ class MedicamentosList(models.Model):
     periodicidad=models.IntegerField()
     cantidad=models.IntegerField()
     precio_unitario=models.IntegerField()
-
+    
