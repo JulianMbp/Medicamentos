@@ -1,8 +1,10 @@
 import Image from "next/image";
+import ThemeSwitch from "./components/Theme.Switch";
 import Link from "next/link";
 import Header from "./sections/header";
 import Welcome from "./sections/welcome";
 import EPS from "./(general)/EPS/page";
+
 
 
 
