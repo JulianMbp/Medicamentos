@@ -1,16 +1,12 @@
 import React from 'react';
 
-interface Farmacia {
-  id: number;
-  nombreSede: string;
-}
-
 interface Medicamento {
   id: number;
   nombre: string;
   existencias: number;
   concentracion: number;
-  farmacias: Farmacia[];
+  nombreFarmacia: string;
+  direccion: string;
   marca: string;
   categoria: string;
   formula: boolean;
@@ -25,6 +21,10 @@ interface MedicationCardProps {
 }
 
 const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, onViewDetails }) => {
+  if (!medicamento) {
+    return null;
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-4">
       <h2 className="text-xl font-semibold text-p-olivine-950 mb-2">{medicamento.nombre}</h2>
@@ -34,13 +34,12 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, onViewDeta
       <p className="text-p-olivine-700">Precio unitario: ${medicamento.precio_unitario}</p>
       <p className="text-p-olivine-700">Existencias: {medicamento.existencias}</p>
       <p className="text-p-olivine-700">Requiere fórmula: {medicamento.formula ? 'Sí' : 'No'}</p>
+      <p className="text-p-olivine-700">Periodicidad: {medicamento.periodicidad} horas</p>
+      <p className="text-p-olivine-700">Cantidad: {medicamento.cantidad}</p>
       <div className="mt-2">
         <p className="font-semibold text-p-olivine-950">Disponible en:</p>
-        <ul className="list-disc list-inside">
-          {medicamento.farmacias.map((farmacia) => (
-            <li key={farmacia.id} className="text-p-olivine-700">{farmacia.nombreSede}</li>
-          ))}
-        </ul>
+        <p className="text-p-olivine-700">{medicamento.nombreFarmacia}</p>
+        <p className="text-p-olivine-700">{medicamento.direccion}</p>
       </div>
       <button
         onClick={() => onViewDetails(medicamento.id)}
@@ -53,4 +52,3 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medicamento, onViewDeta
 };
 
 export default MedicationCard;
-

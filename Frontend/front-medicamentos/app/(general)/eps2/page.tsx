@@ -1,85 +1,89 @@
-"use client";
-
-import React, { useState } from "react";
-import axios from 'axios';
-import Header from "@/app/sections/header";
-import SearchBar from "@/app/components/searchBar";
-import MedicationCard from "@/app/components/MedicationCard";
-
-interface Farmacia {
-  id: number;
-  nombreSede: string;
-}
+'use client'
+import { useState } from "react";
+import axios from "axios";
 
 interface Medicamento {
-  id: number;
   nombre: string;
-  existencias: number;
-  concentracion: number;
-  farmacias: Farmacia[];
   marca: string;
   categoria: string;
+  concentracion: number;
+  existencias: number;
+  precio_unitario: number;
+  nombreFarmacia: string;
+  direccion: string;
   formula: boolean;
   periodicidad: number;
   cantidad: number;
-  precio_unitario: number;
 }
 
-export default function Eps2() {
-  const [searchResults, setSearchResults] = useState<Medicamento[]>([]);
-  const [selectedMedicamento, setSelectedMedicamento] = useState<Medicamento | null>(null);
+export default function Home() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState<Medicamento | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = (results: Medicamento[]) => {
-    setSearchResults(results);
-    setSelectedMedicamento(null);
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/medicamentos/nombre/${encodeURIComponent(searchTerm)}/`
+      );
+      console.log('API Response:', response.data); // Verifica la estructura de datos
+      setSearchResult(response.data);
+    } catch (err) {
+      setError("No se encontró el medicamento o hubo un error al cargar los datos.");
+      console.error(err);
+      setSearchResult(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleViewDetails = async (id: number) => {
-  try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/medicamentos/${id}`);
-    setSelectedMedicamento(response.data);
-  } catch (error) {
-    console.error("Error fetching medication details:", error);
-  }
-};
-
   return (
-    <main className="w-screen min-h-screen bg-p-olivine-50 flex flex-col">
-      <Header />
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Buscar Medicamento</h1>
 
-      <div className="flex flex-col items-center justify-start p-6 bg-p-olivine-100 flex-grow space-y-6 m-5">
-        <div className="shadow-2xl bg-p-olivine-50 rounded-xl p-12 border border-p-olivine-950 border-opacity-20 w-full max-w-4xl">
-          <p className="font-semibold pb-2 pt-6 w-full text-center text-p-olivine-950">
-            Bienvenido usuario de <span className="text-p-olivine-700 font-bold">Sanitas</span>
-          </p>
-
-          <SearchBar onSearch={handleSearch} />
-          <p className="text-p-olivine-700 pt-7 font-light text-center">
-            Busca los medicamentos que necesites
-          </p>
+        <div className="flex space-x-2 mb-6">
+          <input
+            type="text"
+            placeholder="Ingrese el nombre del medicamento..."
+            className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button
+            onClick={handleSearch}
+            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Buscar
+          </button>
         </div>
 
-        {selectedMedicamento ? (
-          <div className="w-full max-w-4xl">
-            <h2 className="text-2xl font-bold text-p-olivine-950 mb-4">Detalles del medicamento:</h2>
-            <MedicationCard medicamento={selectedMedicamento} onViewDetails={handleViewDetails} />
-            <button
-              onClick={() => setSelectedMedicamento(null)}
-              className="mt-4 bg-p-olivine-600 text-white px-4 py-2 rounded-md hover:bg-p-olivine-700 transition-colors duration-200"
-            >
-              Volver a resultados
-            </button>
+        {loading && <p className="text-blue-500">Cargando resultado...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        {searchResult && (
+          <div className="border p-4 rounded-md shadow-sm bg-gray-50 hover:shadow-md">
+            <h2 className="text-lg font-semibold text-gray-800">{searchResult.nombre}</h2>
+            <p className="text-gray-600">Marca: {searchResult.marca}</p>
+            <p className="text-gray-600">Categoría: {searchResult.categoria}</p>
+            <p className="text-gray-600">Concentración: {searchResult.concentracion} mg</p>
+            <p className="text-gray-600">Existencias: {searchResult.existencias}</p>
+            <p className="text-gray-600">Precio Unitario: ${searchResult.precio_unitario}</p>
+            <p className="text-gray-600">Farmacia: {searchResult.nombreFarmacia}</p>
+            <p className="text-gray-600">Dirección: {searchResult.direccion}</p>
+            <p className="text-gray-600">
+              Requiere Fórmula: {searchResult.formula ? "Sí" : "No"}
+            </p>
+            <p className="text-gray-600">Periodicidad: Cada {searchResult.periodicidad} horas</p>
+            <p className="text-gray-600">Cantidad: {searchResult.cantidad}</p>
           </div>
-        ) : searchResults.length > 0 ? (
-          <div className="w-full max-w-4xl">
-            <h2 className="text-2xl font-bold text-p-olivine-950 mb-4">Resultados de la búsqueda:</h2>
-            {searchResults.map((medicamento) => (
-              <MedicationCard key={medicamento.id} medicamento={medicamento} onViewDetails={handleViewDetails} />
-            ))}
-          </div>
-        ) : null}
+        )}
       </div>
-    </main>
+    </div>
   );
 }
-
