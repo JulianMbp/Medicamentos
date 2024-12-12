@@ -90,6 +90,13 @@ const Header = () => {
               >
                 FinderIA
               </Link>
+              <Link
+                href="turn"
+                className="block transition duration-300 hover:text-p-harvest-gold-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Turno
+              </Link>
             </li>
           </ul>
         </nav>
