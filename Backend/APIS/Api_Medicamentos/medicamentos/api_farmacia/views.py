@@ -3,53 +3,43 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Medicamentos, Farmacia
 from .serializers import MedicamentosSerializer, FarmaciaSerializer
+from .blockchain_manager import add_transaction_to_blockchain
 
-
-class MedicamentosAPIView(APIView):
-    def get(self, request):
+class MedicamentosView(APIView):
+    def get(self, request, *args, **kwargs):
         medicamentos = Medicamentos.objects.all()
         serializer = MedicamentosSerializer(medicamentos, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request, *args, **kwargs):
+        data = {
+             'nombre':request.data.get('nombre'),
+             'existencias':request.data.get('existencias'), 
+             'concentracion', 
+             'nombreFarmacia',
+            'direccion',
+            'marca', 'categoria', 'formula', 'periodicidad', 'cantidad', 'precio_unitario'
+        
+        }
 
-    def post(self, request):
-        serializer = MedicamentosSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MedicamentoDetailAPIView(APIView):
-    def get_object(self, pk_or_name):
-        try:
-            # Verificar si es un ID (entero)
-            if pk_or_name.isdigit():
-                return Medicamentos.objects.get(pk=pk_or_name)
-            # Si no es un número, buscar por nombre
-            return Medicamentos.objects.get(nombre=pk_or_name)
-        except Medicamentos.DoesNotExist:
-            return None
+class BlockchainValidationAPIView(APIView):
+    def get(self, request):
+        from .blockchain_manager import blockchain
+        is_valid = blockchain.is_chain_valid()
+        return Response({"is_valid": is_valid})
 
-    def get(self, request, pk_or_name):
-        medicamento = self.get_object(pk_or_name)
-        if medicamento is None:
-            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MedicamentosSerializer(medicamento)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        medicamento = self.get_object(pk)
-        if medicamento is None:
-            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MedicamentosSerializer(medicamento, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        medicamento = self.get_object(pk)
-        if medicamento is None:
-            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        medicamento.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class BlockchainAPIView(APIView):
+    def get(self, request):
+        from .blockchain_manager import blockchain
+        
+        chain_data = [
+            {
+                "index": block['index'],
+                "timestamp": block['timestamp'],
+                "transactions": block['transactions'],  # Cambiado de 'data' a 'transactions'
+                "proof": block['proof'],
+                "previous_hash": block['previous_hash']
+            } for block in blockchain.chain
+        ]
+        return Response({"blockchain": chain_data})
