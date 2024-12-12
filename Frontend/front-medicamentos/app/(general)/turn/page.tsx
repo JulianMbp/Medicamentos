@@ -59,7 +59,7 @@ export default function TurnDispenser() {
               <p className="text-6xl font-extrabold text-p-olivine-600 mb-4 text-center">
                 C{currentTurn}
               </p>
-              <p className="text-sm text-p-olivine-600 text-center mb-4">
+              <p className="text-sm text-p-olivine-800 text-center mb-4">
                 Por favor, espera tu llamado. Nuestro equipo estará contigo en
                 breve.
               </p>

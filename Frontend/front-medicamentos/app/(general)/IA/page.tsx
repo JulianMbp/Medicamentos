@@ -12,9 +12,12 @@ export default function IA() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Función para realizar la llamada a la API usando Axios
+  
   async function query(data) {
     try {
+        
       const response = await axios.post(
+        
         "https://api.stack-ai.com/inference/v0/run/0690b6cb-e1e2-47ee-8726-4bf196034ae6/6759f1717c4f228b77d31358",
         data,
         {
