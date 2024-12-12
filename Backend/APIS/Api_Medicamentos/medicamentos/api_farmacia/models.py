@@ -1,7 +1,5 @@
 from django.db import models
 
-
-
 class MedicamentosList(models.Model):
     nombre=models.CharField(max_length=20)
     existencias=models.IntegerField()
