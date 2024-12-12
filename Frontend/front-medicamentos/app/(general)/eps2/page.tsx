@@ -10,7 +10,7 @@ export default function eps2() {
     console.log("Buscando:", query);
   };
   return (
-    <main className="w-screen h-full bg-p-olivine-50 flex flex-col">
+    <main className="w-screen h-full bg-p-olivine-50 flex flex-col ">
       <Header />
 
       <div className="flex flex-col items-center justify-center p-6 bg-p-olivine-100 min-h-screen space-y-6 m-5 ">
