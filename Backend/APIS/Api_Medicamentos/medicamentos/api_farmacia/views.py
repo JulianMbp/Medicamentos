@@ -11,7 +11,11 @@ class MedicamentosListView(APIView):
         serializer = MedicamentosListSerializer(medicamentos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     def post(self, request):
-        serializer = MedicamentosListSerializer(data=request.data)
+        if isinstance(request.data, list):
+            serializer = MedicamentosListSerializer(data=request.data, many=True)
+        else:
+            serializer = MedicamentosListSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
