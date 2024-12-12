@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import MedicamentosList
 from .serializers import MedicamentosListSerializer
-from .simple_blockchain import blockchain  # Asegúrate de importar el blockchain
+from .simple_blockchain import blockchain
 
 class MedicamentosListView(APIView):
 
@@ -28,8 +28,8 @@ class MedicamentosListView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            # Aquí llamas a `new_block` después de guardar el medicamento para incrementar el índice
-            blockchain.new_block(proof=1)  # Puedes ajustar el proof como lo necesites
+            # Aquí se llama a `new_block` después de guardar el medicamento para incrementar el índice
+            blockchain.new_block(proof=1)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -75,5 +75,5 @@ class BlockchainValidationAPIView(APIView):
 class BlockchainView(APIView):
     def get(self, request):
         # Obtiene los bloques de la cadena
-        blockchain_data = blockchain.chain  # Accede a la lista de bloques en la cadena
+        blockchain_data = blockchain.chain
         return Response(blockchain_data, status=status.HTTP_200_OK)
