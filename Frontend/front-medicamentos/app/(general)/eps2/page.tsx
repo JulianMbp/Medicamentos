@@ -1,23 +1,24 @@
-'use client'
-import { useState } from "react";
-import axios from "axios";
+'use client';
+import { useState } from 'react';
+import axios from 'axios';
 
 interface Medicamento {
+  id: number;
   nombre: string;
-  marca: string;
-  categoria: string;
-  concentracion: number;
   existencias: number;
-  precio_unitario: number;
+  concentracion: number;
   nombreFarmacia: string;
   direccion: string;
+  marca: string;
+  categoria: string;
   formula: boolean;
   periodicidad: number;
   cantidad: number;
+  precio_unitario: number;
 }
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState<Medicamento | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,10 +32,17 @@ export default function Home() {
       const response = await axios.get(
         `http://127.0.0.1:8000/api/medicamentos/nombre/${encodeURIComponent(searchTerm)}/`
       );
-      console.log('API Response:', response.data); // Verifica la estructura de datos
-      setSearchResult(response.data);
+      console.log('API Response:', response.data); // Debugging: Verifica la estructura
+      const medicamentos = response.data.medicamentos;
+
+      if (medicamentos.length > 0) {
+        setSearchResult(medicamentos[0]); // Toma el primer elemento del array
+      } else {
+        setSearchResult(null);
+        setError('No se encontraron medicamentos con ese nombre.');
+      }
     } catch (err) {
-      setError("No se encontró el medicamento o hubo un error al cargar los datos.");
+      setError('Hubo un error al cargar los datos.');
       console.error(err);
       setSearchResult(null);
     } finally {
@@ -66,7 +74,7 @@ export default function Home() {
         {loading && <p className="text-blue-500">Cargando resultado...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
-        {searchResult && (
+        {searchResult ? (
           <div className="border p-4 rounded-md shadow-sm bg-gray-50 hover:shadow-md">
             <h2 className="text-lg font-semibold text-gray-800">{searchResult.nombre}</h2>
             <p className="text-gray-600">Marca: {searchResult.marca}</p>
@@ -77,11 +85,13 @@ export default function Home() {
             <p className="text-gray-600">Farmacia: {searchResult.nombreFarmacia}</p>
             <p className="text-gray-600">Dirección: {searchResult.direccion}</p>
             <p className="text-gray-600">
-              Requiere Fórmula: {searchResult.formula ? "Sí" : "No"}
+              Requiere Fórmula: {searchResult.formula ? 'Sí' : 'No'}
             </p>
             <p className="text-gray-600">Periodicidad: Cada {searchResult.periodicidad} horas</p>
             <p className="text-gray-600">Cantidad: {searchResult.cantidad}</p>
           </div>
+        ) : (
+          !loading && !error && <p className="text-gray-600">No hay resultados para mostrar.</p>
         )}
       </div>
     </div>
