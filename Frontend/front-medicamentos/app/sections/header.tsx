@@ -30,7 +30,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Desktop Navigation */}
+     
       <nav className="hidden md:flex items-center space-x-8">
         <ul className="flex space-x-6 text-lg">
           <li className="relative group right-7">
@@ -39,6 +39,16 @@ const Header = () => {
               className="transition duration-300 hover:text-p-harvest-gold-200"
             >
               FinderIA
+            </Link>
+            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-p-harvest-gold-200 transition-all duration-300 group-hover:w-full"></span>
+          </li>
+
+          <li className="relative group right-7">
+            <Link
+              href="turn"
+              className="transition duration-300 hover:text-p-harvest-gold-200"
+            >
+              Turnos
             </Link>
             <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-p-harvest-gold-200 transition-all duration-300 group-hover:w-full"></span>
           </li>
