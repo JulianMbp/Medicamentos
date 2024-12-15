@@ -89,6 +89,7 @@ export default function IA() {
 
   return (
     <main className="w-full h-full bg-p-olivine-50 font-sans">
+    <main className="w-full h-full bg-p-olivine-50 font-sans">
       <Header />
       <div className="w-full h-screen bg-p-olivine-100 flex flex-col justify-end">
         <div className="bg-p-olivine-50 max-w-md mx-auto p-4 my-auto rounded-lg shadow-lg w-[70%] h-auto">
@@ -125,6 +126,7 @@ export default function IA() {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg text-p-olivine-950 focus:outline-none focus:ring-2 focus:ring-p-olivine-700"
+              disabled={isLoading}
             />
             <button
               onClick={handleSendMessage}
@@ -138,3 +140,4 @@ export default function IA() {
     </main>
   );
 }
+

@@ -1,55 +1,79 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Medicamentos, Farmacia
-from .serializers import MedicamentosSerializer, FarmaciaSerializer
+from .models import MedicamentosList
+from .serializers import MedicamentosListSerializer
+from .simple_blockchain import blockchain
 
+class MedicamentosListView(APIView):
 
-class MedicamentosAPIView(APIView):
-    def get(self, request):
-        medicamentos = Medicamentos.objects.all()
-        serializer = MedicamentosSerializer(medicamentos, many=True)
-        return Response(serializer.data)
+    def get(self, request, pk):
+        try:
+            medicamento = MedicamentosList.objects.get(pk=pk)
+        except MedicamentosList.DoesNotExist:
+            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = MedicamentosListSerializer(medicamento)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = MedicamentosSerializer(data=request.data)
+        # Verificar si la cadena de bloques es válida antes de crear un medicamento
+        is_valid = blockchain.is_chain_valid()
+        if not is_valid:
+            return Response({"error": "La cadena de bloques no es válida"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if isinstance(request.data, list):
+            serializer = MedicamentosListSerializer(data=request.data, many=True)
+        else:
+            serializer = MedicamentosListSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
+            # Aquí se llama a `new_block` después de guardar el medicamento para incrementar el índice
+            blockchain.new_block(proof=1)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MedicamentoDetailAPIView(APIView):
-    def get_object(self, pk_or_name):
-        try:
-            # Verificar si es un ID (entero)
-            if pk_or_name.isdigit():
-                return Medicamentos.objects.get(pk=pk_or_name)
-            # Si no es un número, buscar por nombre
-            return Medicamentos.objects.get(nombre=pk_or_name)
-        except Medicamentos.DoesNotExist:
-            return None
-
-    def get(self, request, pk_or_name):
-        medicamento = self.get_object(pk_or_name)
-        if medicamento is None:
-            return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MedicamentosSerializer(medicamento)
-        return Response(serializer.data)
-
     def put(self, request, pk):
-        medicamento = self.get_object(pk)
-        if medicamento is None:
+        try:
+            medicamento = MedicamentosList.objects.get(pk=pk)
+        except MedicamentosList.DoesNotExist:
             return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = MedicamentosSerializer(medicamento, data=request.data)
+        serializer = MedicamentosListSerializer(medicamento, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        medicamento = self.get_object(pk)
-        if medicamento is None:
+        try:
+            medicamento = MedicamentosList.objects.get(pk=pk)
+        except MedicamentosList.DoesNotExist:
             return Response({"error": "Medicamento no encontrado"}, status=status.HTTP_404_NOT_FOUND)
         medicamento.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Medicamento eliminado"}, status=status.HTTP_204_NO_CONTENT)
+
+class MedicamentoByNombreView(APIView):
+    def get(self, request, nombre):
+        medicamentos = MedicamentosList.objects.filter(nombre__icontains=nombre)
+        if not medicamentos.exists():
+            return Response({"error": "No se encontraron medicamentos con el nombre proporcionado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = MedicamentosListSerializer(medicamentos, many=True)
+        return Response({"medicamentos": serializer.data}, status=status.HTTP_200_OK)
+
+class BlockchainValidationAPIView(APIView):
+    def get(self, request):
+        is_valid = blockchain.is_chain_valid()
+        if is_valid:
+            message = "El blockchain es válido."
+        else:
+            message = "El blockchain no es válido."
+        
+        return Response({"is_valid": is_valid, "message": message})
+
+class BlockchainView(APIView):
+    def get(self, request):
+        # Obtiene los bloques de la cadena
+        blockchain_data = blockchain.chain
+        return Response(blockchain_data, status=status.HTTP_200_OK)
