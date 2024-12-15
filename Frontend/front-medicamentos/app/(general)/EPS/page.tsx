@@ -79,9 +79,9 @@ export default function EPS() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-green-100 dark:bg-green-800 p-4"
+              className="bg-green-100 dark:bg-zinc-700 p-4"
             >
-              <p className="text-green-800 dark:text-green-200 text-center">
+              <p className="text-green-800 dark:text-green-200 dark:bg-zinc-700 text-center">
                 Redirigiendo a {selectedEPS}...
               </p>
             </motion.div>
@@ -99,11 +99,11 @@ const DecorativeElements = ({ mousePosition }: { mousePosition: { x: number; y: 
   return (
     <>
       <motion.div
-        className="absolute  top-0 left-0 w-20 h-20 rounded-full bg-green-300 dark:bg-green-300 opacity-50"
+        className="absolute  top-0 left-0 w-20 h-20 rounded-full bg-green-300 dark:bg-p-harvest-gold-300 opacity-50"
         style={{ transform: `translate(${x * 0.06}px, ${y * 0.10}px)` }}
       />
       <motion.div
-        className="absolute  bottom-1/3 left-0 w-20 h-20 rounded-full bg-yellow-300 dark:bg-green-300 opacity-50"
+        className="absolute  bottom-1/3 left-0 w-20 h-20 rounded-full bg-yellow-300 dark:bg-p-harvest-gold-300 opacity-50"
         style={{ transform: `translate(${x * 0.03}px, ${y * 0.10}px)` }}
       />
       <motion.div
@@ -115,12 +115,12 @@ const DecorativeElements = ({ mousePosition }: { mousePosition: { x: number; y: 
         style={{ transform: `translate(${-x * 0.03}px, ${-y * 0.10}px)` }}
       />
       <motion.div
-        className="absolute hidden sm:block bottom top-1/2 left-1/4 w-24 h-24 rounded-full bg-green-400 dark:bg-yellow-100 opacity-50"
+        className="absolute hidden sm:block bottom top-1/2 left-1/4 w-24 h-24 rounded-full bg-green-400 dark:bg-p-harvest-gold-100 opacity-50"
         style={{ transform: `translate(${x * 0.05}px, ${-y * 0.09}px)` }}
       />
      
       <motion.div
-        className="absolute top-1/4 left-3/4 w-24 h-24 rounded-full bg-green-300 dark:bg-green-300 opacity-50"
+        className="absolute top-1/4 left-3/4 w-24 h-24 rounded-full bg-green-300 dark:bg-p-harvest-gold-300 opacity-50"
         style={{ transform: `translate(${x * 0.02}px, ${-y * 0.10}px)` }}
       />
     </>
